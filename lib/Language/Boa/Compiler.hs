@@ -112,8 +112,8 @@ errUnboundVar l x = mkError (printf "Unbound variable %s" x) l
 -- | Compiling Primitive Operations
 --------------------------------------------------------------------------------
 compilePrim1 :: Tag -> Env -> Prim1 -> AExp -> [Instruction]
-compilePrim1 _ env Add1 v = error "TBD:compilePrim1:Add1"
-compilePrim1 l env Sub1 v = error "TBD:compilePrim1:Sub1"
+compilePrim1 _ env Add1 v = compileEnv env v ++ [IAdd (Reg EAX) (Const 1)]
+compilePrim1 l env Sub1 v = compileEnv env v ++ [IAdd (Reg EAX) (Const (-1))]
 --No use for the tag label, so we can just use _ instead of l
 
 compilePrim2 :: Tag -> Env -> Prim2 -> IExp -> IExp -> [Instruction]
