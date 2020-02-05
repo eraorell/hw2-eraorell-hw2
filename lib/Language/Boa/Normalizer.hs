@@ -41,7 +41,10 @@ anf i (Prim1 o e l)     = (i', Prim1 o e' l)
   where
     (i', e') = anf i e
 
-anf i (Prim2 o e1 e2 l) = error "TBD:anf:prim2"
+anf i (Prim2 o e1 e2 l) = (i'', stitch (bind1 ++ bind2) (Prim2 o e1' e2' l) )
+	where
+		(i', bind1, e1') = imm i e1
+		(i'', bind2, e2') = imm i' e2
 
 anf i (If c e1 e2 l)    = (i''', If c' e1' e2' l)
   where
@@ -83,13 +86,18 @@ imms i (e:es)       = (i'', bs' ++ bs, e' : es' )
 --------------------------------------------------------------------------------
 imm :: Int -> Expr a -> (Int, Binds a, ImmExpr a)
 --------------------------------------------------------------------------------
-imm i (Number n l)      = error "TBD:imm:Number"
+imm i (Number n l)      = (i, [], Number n l)
 
-imm i (Id x l)          = error "TBD:imm:Id"
+imm i (Id x l)          = (i, [], Id x l)
 
 imm i e@(Prim1 _ _ l)   = immExp i e l
 
-imm i (Prim2 o e1 e2 l) = error "TBD:imm:prim2"
+imm i (Prim2 o e1 e2 l) = (i''', bind, Id x l)
+	where
+		(i', bind1, x') = imm i e1
+		(i'', bind2, x'') = imm i' e2
+		(i''', x) = fresh l i''
+		bind = bind1 ++ bind2 ++ [(x, Prim2 o x' x'' l)]
 
 imm i e@(If _ _ _  l)   = immExp i e l
 
