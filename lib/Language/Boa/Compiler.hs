@@ -72,7 +72,13 @@ compileEnv env (Prim1 o v l)     = compilePrim1 l env o v
 
 compileEnv env (Prim2 o v1 v2 l) = compilePrim2 l env o v1 v2
 
-compileEnv env (If v e1 e2 l)    = error "TBD:compileEnv:If"
+compileEnv env (If v e1 e2 l)    = compileEnv env v ++ 
+									[ICmp (Reg EAX) (Const 1), IJe (BranchTrue l)]
+									++ compileEnv env e2 ++ 
+									[IJmp BranchDone l ]
+									++ ILabel (BranchTrue l)
+									: compileEnv env e1 ++
+									[ILabel (BranchDone l)]
 
 compileImm :: Env -> IExp -> Instruction
 compileImm env v = IMov (Reg EAX) (immArg env v)
@@ -92,7 +98,7 @@ compileBind env (x, e) = (env', is)
 
 immArg :: Env -> IExp -> Arg
 immArg _   (Number n _)  = repr n
-immArg env e@(Id x _)    = error "TBD:immArg:Id"
+immArg env e@(Id x _)    = stackVar (fromMaybe err (lookupEnv x env))
   where
     err                  = abort (errUnboundVar (sourceSpan e) x)
 immArg _   e             = panic msg (sourceSpan e)
@@ -106,13 +112,14 @@ errUnboundVar l x = mkError (printf "Unbound variable %s" x) l
 -- | Compiling Primitive Operations
 --------------------------------------------------------------------------------
 compilePrim1 :: Tag -> Env -> Prim1 -> AExp -> [Instruction]
-compilePrim1 l env Add1 v = error "TBD:compilePrim1:Add1"
+compilePrim1 _ env Add1 v = error "TBD:compilePrim1:Add1"
 compilePrim1 l env Sub1 v = error "TBD:compilePrim1:Sub1"
+--No use for the tag label, so we can just use _ instead of l
 
 compilePrim2 :: Tag -> Env -> Prim2 -> IExp -> IExp -> [Instruction]
-compilePrim2 l env Plus  v1 v2 = error "TBD:compilePrim2:Plus"
-compilePrim2 l env Minus v1 v2 = error "TBD:compilePrim2:Minus"
-compilePrim2 l env Times v1 v2 = error "TBD:compilePrim2:Times"
+compilePrim2 l env Plus  v1 v2 = [IMov (Reg EAX) (immArg env v1), IAdd (Reg EAX) (immArg env v2)]
+compilePrim2 l env Minus v1 v2 = [IMov (Reg EAX) (immArg env v1), ISub (Reg EAX) (immArg env v2)]
+compilePrim2 l env Times v1 v2 = [IMov (Reg EAX) (immArg env v1), IMul (Reg EAX) (immArg env v2)]
 
 --------------------------------------------------------------------------------
 -- | Local Variables
