@@ -31,11 +31,11 @@ instrAsm (IMov dst val) = printf "  mov %s, %s"  (argAsm dst) (argAsm val)
 instrAsm (IAdd dst val) = printf "  add %s, %s"  (argAsm dst) (argAsm val)
 instrAsm (ISub dst val) = printf "  sub %s, %s"  (argAsm dst) (argAsm val)
 instrAsm (IMul dst val) = printf "  imul %s, %s" (argAsm dst) (argAsm val)
-instrAsm (ICmp a1 a2) 	= printf "	cmp %s, %s"  (argAsm a1)  (argAsm a2)
+instrAsm (ICmp a1 a2) 	= printf "  cmp %s, %s"  (argAsm a1)  (argAsm a2)
 instrAsm (ILabel l)     = printf "%s: "			 (labelAsm l)
-instrAsm (IJe  l)       = printf "	je near %s"  (labelAsm l)
-instrAsm (IJne  l)      = printf "	jne near %s" (labelAsm l)
-instrAsm (IJmp l)       = printf "	jmp near %s" (labelAsm l)
+instrAsm (IJe  l)       = printf "  je near %s"  (labelAsm l)
+instrAsm (IJne  l)      = printf "  jne near %s" (labelAsm l)
+instrAsm (IJmp l)       = printf "  jmp near %s" (labelAsm l)
 instrAsm IRet           =        "  ret"
 
 regAsm :: Reg -> Text
