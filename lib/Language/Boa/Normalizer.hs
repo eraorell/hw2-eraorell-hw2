@@ -97,7 +97,7 @@ imm i (Prim2 o e1 e2 l) = (i''', bind, Id x l)
 		(i', bind1, x') = imm i e1
 		(i'', bind2, x'') = imm i' e2
 		(i''', x) = fresh l i''
-		bind = bind1 ++ bind2 ++ [(x, Prim2 o x' x'' l)]
+		bind = bind1 ++ bind2 ++ [(Prim2 o x' x'' l), x]
 
 imm i e@(If _ _ _  l)   = immExp i e l
 
