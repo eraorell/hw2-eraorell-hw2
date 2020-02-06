@@ -97,14 +97,10 @@ compileBind env (x, e) = (env', is)
 
 immArg :: Env -> IExp -> Arg
 immArg _   (Number n _)  = repr n
-immArg env e@(Id x _)    = RegOffset (-4 * i) ESP
-	where
-		i = case (lookupEnv x env) of
-			Just a -> a
-			Nothing -> panic (printf "Error: Variable '%s' is unbound" x) (sourceSpan e)
-  {-where
-    err                  = abort (errUnboundVar (sourceSpan e) x) -}
-immArg _   e             = panic msg (sourceSpan e) 
+immArg env e@(Id x _)    = stackVar (fromMaybe err (lookupEnv x env))
+  where
+    err                  = abort (errUnboundVar (sourceSpan e) x)
+immArg _   e             = panic msg (sourceSpan e)
   where
     msg                  = "Unexpected non-immExpr in immArg: " ++ show (void e)
 

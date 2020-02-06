@@ -41,7 +41,7 @@ anf i (Prim1 o e l)     = (i', Prim1 o e' l)
   where
     (i', e') = anf i e
 
-anf i (Prim2 o e1 e2 l) = (i'', stitch (bind1 ++ bind2) (Prim2 o e1' e2' l) )
+anf i (Prim2 o e1 e2 l) = (i'', stitch (bind2 ++ bind1) (Prim2 o e1' e2' l) )
 	where
 		(i', bind1, e1') = imm i e1
 		(i'', bind2, e2') = imm i' e2
