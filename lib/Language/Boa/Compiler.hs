@@ -102,9 +102,9 @@ immArg env e@(Id x _)    = RegOffset (-4 * i) ESP
 		i = case (lookupEnv x env) of
 			Just a -> a
 			Nothing -> panic (printf "Error: Variable '%s' is unbound" x) (sourceSpan e)
-  where
-    err                  = abort (errUnboundVar (sourceSpan e) x)
-immArg _   e             = panic msg (sourceSpan e)
+  {-where
+    err                  = abort (errUnboundVar (sourceSpan e) x) -}
+immArg _   e             = panic msg (sourceSpan e) 
   where
     msg                  = "Unexpected non-immExpr in immArg: " ++ show (void e)
 
