@@ -66,11 +66,9 @@ compileEnv env v@(Number {})     = [ compileImm env v  ]
 
 compileEnv env v@(Id {})         = [ compileImm env v  ]
 
-compileEnv env e@(Let b e1 e2 l) = compileEnv env e1 ++
-									[IMov (RegOffset xn ESP) (Reg EAX)]
-									++ compileEnv env' e2
+compileEnv env e@(Let b e1 e2 l) = i ++ compileEnv env' e2
 	where
-		(xn, env') = pushEnv b env
+		(env', i) = compileBind env (b, e1)
 
 compileEnv env (Prim1 o v l)     = compilePrim1 l env o v
 
@@ -115,8 +113,8 @@ errUnboundVar l x = mkError (printf "Unbound variable %s" x) l
 -- | Compiling Primitive Operations
 --------------------------------------------------------------------------------
 compilePrim1 :: Tag -> Env -> Prim1 -> AExp -> [Instruction]
-compilePrim1 _ env Add1 v = compileEnv env v ++ [IAdd (Reg EAX) (Const 1)]
-compilePrim1 l env Sub1 v = compileEnv env v ++ [IAdd (Reg EAX) (Const (-1))]
+compilePrim1 _ env Add1 v = (compileEnv env v) ++ [IAdd (Reg EAX) (Const 1)]
+compilePrim1 l env Sub1 v = (compileEnv env v) ++ [IAdd (Reg EAX) (Const (-1))]
 --No use for the tag label, so we can just use _ instead of l
 
 compilePrim2 :: Tag -> Env -> Prim2 -> IExp -> IExp -> [Instruction]
