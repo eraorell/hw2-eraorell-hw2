@@ -80,6 +80,13 @@ compileEnv env (If v e1 e2 l)    = 	compileEnv env v ++
 									[IJmp (BranchDone (snd l)), ILabel (BranchTrue (snd l))]
 									++ compileEnv env e2 ++
 									[ILabel (BranchDone (snd l))]
+									--if eax == 0, then we go to the BranchTrue label, which is else statement 
+									-- or the false branch. we would continue in compileEnv env e2 code then 
+									-- just end it at BranchDone label.
+									-- However, when eax and 0 don't equal each other, then we would continue
+									-- code normally, which is where compileEnv env e1 code comes in. Then the
+									-- next thing we would do in this true branch is jump to BranchDone label
+									
 
 compileImm :: Env -> IExp -> Instruction
 compileImm env v = IMov (Reg EAX) (immArg env v)
