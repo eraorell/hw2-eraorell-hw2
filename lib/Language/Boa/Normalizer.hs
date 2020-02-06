@@ -92,11 +92,12 @@ imm i (Id x l)          = (i, [], Id x l)
 
 imm i e@(Prim1 _ _ l)   = immExp i e l
 
-imm i (Prim2 o e1 e2 l) = (i'', bind, mkId x l)
+imm i (Prim2 o e1 e2 l) = (i''', bind, mkId x l)
 	where
-		(i', bind1, [x' , x'']) = imms i [e1, e2]
-		(i'', x) = fresh l i'
-		bind = (x, (Prim2 o x' x'' l,l)): bind1
+		(i', bind1, x') = imm i e1
+		(i'', bind2, x'') = imm i' e2
+		(i''', x) = fresh l i''
+		bind = (x, (Prim2 o x' x'' l,l)): (bind2 ++ bind1)
 
 imm i e@(If _ _ _  l)   = immExp i e l
 
