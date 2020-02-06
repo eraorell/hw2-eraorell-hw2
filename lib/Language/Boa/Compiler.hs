@@ -101,7 +101,7 @@ compileBind env (x, e) = (env', is)
 
 immArg :: Env -> IExp -> Arg
 immArg _   (Number n _)  = repr n
-immArg env e@(Id x _)    = error "TBD"
+immArg env e@(Id x _)    = stackVar (fromMaybe err (lookupEnv x env))
   where
     err                  = abort (errUnboundVar (sourceSpan e) x)
 immArg _   e             = panic msg (sourceSpan e)
